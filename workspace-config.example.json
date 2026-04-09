@@ -1,0 +1,62 @@
+{
+  "czulosc_klasniecia": 70,
+  "hotkey": "Win+Shift+W",
+  "zdarzenie_dzwiekowe": "Clapping",
+  "liczba_zdarzen": 2,
+  "cooldown": 3,
+  "czulosc_nn": 0.12,
+  "slowa_kluczowe": "launch",
+  "jezyk_mowy": "en",
+  "profil_aktywny": "Praca",
+  "profile": {
+    "Praca": {
+      "aplikacje": [
+        {
+          "nazwa": "VS Code",
+          "exe": "code",
+          "argumenty": "C:\\Projects\\my-app",
+          "ekran": 1,
+          "polowa": "",
+          "warstwa": "Normal",
+          "kolejnosc": 0,
+          "minimalizuj": false
+        },
+        {
+          "nazwa": "Chrome - Docs",
+          "exe": "",
+          "argumenty": "https://docs.google.com",
+          "ekran": 2,
+          "polowa": "left",
+          "warstwa": "Normal",
+          "kolejnosc": 0,
+          "minimalizuj": false
+        },
+        {
+          "nazwa": "Spotify",
+          "exe": "",
+          "argumenty": "https://open.spotify.com/track/39shmbIHICJ2Wxnk1fPSdz",
+          "ekran": 0,
+          "polowa": "",
+          "warstwa": "Normal",
+          "kolejnosc": 1,
+          "minimalizuj": true
+        }
+      ],
+      "terminale": [
+        {
+          "nazwa": "Dev Server",
+          "terminal_typ": "Git Bash",
+          "folder": "C:\\Projects\\my-app",
+          "komenda": "npm run dev",
+          "ekran": 2,
+          "polowa": "right",
+          "warstwa": "On top"
+        }
+      ]
+    },
+    "Default": {
+      "aplikacje": [],
+      "terminale": []
+    }
+  }
+}

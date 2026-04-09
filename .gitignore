@@ -1,0 +1,33 @@
+# Build artifacts
+dist/
+build/
+*.spec
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Claude Code workspace settings
+.claude/
+
+# Temporary files created by the app
+_r.vbs
+_a.txt
+_t.vbs
+_term_*.sh
+_term_*.ps1
+_term_*.bat
+
+# ML models (downloaded at runtime)
+*.pth
+*.tflite
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
