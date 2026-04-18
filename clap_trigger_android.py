@@ -3,7 +3,7 @@ import os
 import time
 
 from kivy.app import App
-from kivy.clock import mainthread
+from kivy.clock import Clock, mainthread
 from kivy.metrics import dp
 from kivy.utils import platform
 from kivy.uix.boxlayout import BoxLayout
@@ -92,6 +92,7 @@ class ClapTriggerApp(App):
         self.last_clap_time = 0.0
         self.listening = False
         self.stream = None
+        self.poll_event = None
         self.audio_backend = None
         self.audio_permission_granted = platform != "android"
 
@@ -269,9 +270,18 @@ class ClapTriggerApp(App):
             return
 
         try:
-            self.stream = self.audio_backend.start(self.on_audio_data, rate=44100, channels=1)
+            self.stream = self.audio_backend.get_input(
+                callback=self.on_audio_data,
+                rate=44100,
+                channels=1,
+                source="default",
+            )
+            self.stream.start()
+            self.poll_event = self.stream.poll
+            Clock.schedule_interval(self.poll_event, 1 / 60.0)
         except Exception as exc:
             self.stream = None
+            self.poll_event = None
             self.show_popup("Error", f"No se pudo abrir el microfono:\n{exc}")
             return
 
@@ -280,9 +290,13 @@ class ClapTriggerApp(App):
         self.status_label.text = f"Escuchando... umbral {self.threshold:.1f} dB"
 
     def stop_listening(self):
+        if self.poll_event is not None:
+            Clock.unschedule(self.poll_event)
+            self.poll_event = None
+
         if self.stream is not None and self.audio_backend is not None:
             try:
-                self.audio_backend.stop(self.stream)
+                self.stream.stop()
             except Exception:
                 pass
             self.stream = None
