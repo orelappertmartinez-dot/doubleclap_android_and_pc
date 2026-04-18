@@ -2,7 +2,6 @@ import json
 import os
 import time
 
-import numpy as np
 from kivy.app import App
 from kivy.clock import mainthread
 from kivy.metrics import dp
@@ -13,11 +12,6 @@ from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.textinput import TextInput
-
-try:
-    import audiostream
-except ImportError:
-    audiostream = None
 
 try:
     from android.permissions import Permission, check_permission, request_permissions
@@ -31,18 +25,43 @@ DEFAULT_THRESHOLD = 30.0
 MIN_INTERVAL = 0.1
 MAX_INTERVAL = 1.0
 DEFAULT_APPS = []
-CONFIG_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "clap-config.json")
+PACKAGED_CONFIG_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "clap-config.json")
+
+
+def default_config():
+    return {"threshold": DEFAULT_THRESHOLD, "apps": DEFAULT_APPS.copy()}
+
+
+def get_numpy_module():
+    import numpy
+
+    return numpy
+
+
+def get_audiostream_module():
+    import audiostream
+
+    return audiostream
+
+
+def get_config_path():
+    app = App.get_running_app()
+    if app is not None and getattr(app, "user_data_dir", None):
+        return os.path.join(app.user_data_dir, "clap-config.json")
+    return PACKAGED_CONFIG_FILE
 
 
 def load_config():
-    if not os.path.exists(CONFIG_FILE):
-        return {"threshold": DEFAULT_THRESHOLD, "apps": DEFAULT_APPS.copy()}
+    config_path = get_config_path()
+    source_path = config_path if os.path.exists(config_path) else PACKAGED_CONFIG_FILE
+    if not os.path.exists(source_path):
+        return default_config()
 
     try:
-        with open(CONFIG_FILE, "r", encoding="utf-8") as file:
+        with open(source_path, "r", encoding="utf-8") as file:
             data = json.load(file)
     except (OSError, ValueError, json.JSONDecodeError):
-        return {"threshold": DEFAULT_THRESHOLD, "apps": DEFAULT_APPS.copy()}
+        return default_config()
 
     threshold = float(data.get("threshold", DEFAULT_THRESHOLD))
     apps = data.get("apps", DEFAULT_APPS.copy())
@@ -53,7 +72,11 @@ def load_config():
 
 def save_config(config):
     try:
-        with open(CONFIG_FILE, "w", encoding="utf-8") as file:
+        config_path = get_config_path()
+        config_dir = os.path.dirname(config_path)
+        if config_dir:
+            os.makedirs(config_dir, exist_ok=True)
+        with open(config_path, "w", encoding="utf-8") as file:
             json.dump(config, file, indent=2, ensure_ascii=False)
         return True
     except OSError:
@@ -69,6 +92,7 @@ class ClapTriggerApp(App):
         self.last_clap_time = 0.0
         self.listening = False
         self.stream = None
+        self.audio_backend = None
         self.audio_permission_granted = platform != "android"
 
         root = BoxLayout(orientation="vertical", padding=dp(12), spacing=dp(10))
@@ -236,12 +260,16 @@ class ClapTriggerApp(App):
             )
             return
 
-        if audiostream is None:
-            self.show_popup("Error", "La libreria de audio no esta disponible en esta compilacion.")
+        try:
+            self.audio_backend = get_audiostream_module()
+            get_numpy_module()
+        except Exception as exc:
+            self.audio_backend = None
+            self.show_popup("Error", f"No se pudieron cargar las librerias de audio:\n{exc}")
             return
 
         try:
-            self.stream = audiostream.start(self.on_audio_data, rate=44100, channels=1)
+            self.stream = self.audio_backend.start(self.on_audio_data, rate=44100, channels=1)
         except Exception as exc:
             self.stream = None
             self.show_popup("Error", f"No se pudo abrir el microfono:\n{exc}")
@@ -252,9 +280,9 @@ class ClapTriggerApp(App):
         self.status_label.text = f"Escuchando... umbral {self.threshold:.1f} dB"
 
     def stop_listening(self):
-        if self.stream is not None and audiostream is not None:
+        if self.stream is not None and self.audio_backend is not None:
             try:
-                audiostream.stop(self.stream)
+                self.audio_backend.stop(self.stream)
             except Exception:
                 pass
             self.stream = None
@@ -264,12 +292,19 @@ class ClapTriggerApp(App):
         self.status_label.text = "Detenido."
 
     def on_audio_data(self, data):
-        samples = np.frombuffer(data, dtype=np.int16)
+        try:
+            numpy = get_numpy_module()
+        except Exception as exc:
+            self.update_status(f"Error cargando numpy: {exc}")
+            self.stop_listening()
+            return
+
+        samples = numpy.frombuffer(data, dtype=numpy.int16)
         if samples.size == 0:
             return
 
-        volume = np.linalg.norm(samples) / samples.size
-        db = 20 * np.log10(volume) if volume > 0 else 0
+        volume = numpy.linalg.norm(samples) / samples.size
+        db = 20 * numpy.log10(volume) if volume > 0 else 0
 
         if db <= self.threshold:
             return
