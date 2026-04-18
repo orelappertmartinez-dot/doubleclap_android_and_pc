@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clap Trigger - Controla aplicaciones con palmadas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+            padding: 40px 20px;
+        }
+
+        header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .icon {
+            font-size: 2em;
+        }
+
+        .card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .features {
+            list-style: none;
+            margin: 20px 0;
+        }
+
+        .features li {
+            color: #666;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .features li:before {
+            content: "✓ ";
+            color: #667eea;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .download-section {
+            margin-top: 30px;
+        }
+
+        .download-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: none;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .download-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+
+        .download-btn.secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            box-shadow: 0 5px 15px rgba(245, 87, 108, 0.4);
+        }
+
+        .download-btn.secondary:hover {
+            box-shadow: 0 8px 25px rgba(245, 87, 108, 0.6);
+        }
+
+        .info-section {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .info-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .instructions {
+            margin-top: 20px;
+        }
+
+        .instructions h3 {
+            color: #764ba2;
+            margin: 15px 0 10px 0;
+            font-size: 1.1em;
+        }
+
+        .instructions ol, .instructions ul {
+            margin-left: 20px;
+            line-height: 1.8;
+            color: #666;
+        }
+
+        .instructions li {
+            margin-bottom: 8px;
+        }
+
+        .code-block {
+            background: #f5f5f5;
+            padding: 15px;
+            border-left: 4px solid #667eea;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+
+        footer {
+            text-align: center;
+            color: white;
+            padding: 30px;
+            opacity: 0.8;
+        }
+
+        .requirements {
+            background: #f0f7ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .requirements h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .requirements ul {
+            margin-left: 20px;
+            color: #555;
+        }
+
+        .requirements li {
+            margin-bottom: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 2em;
+            }
+
+            .card {
+                padding: 25px;
+            }
+
+            .download-btn {
+                display: block;
+                width: 100%;
+                text-align: center;
+                margin-bottom: 10px;
+            }
+        }
+
+        .badge {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>👏 Clap Trigger</h1>
+            <p>Controla tus aplicaciones con palmadas</p>
+        </header>
+
+        <div class="content">
+            <!-- Android Card -->
+            <div class="card">
+                <h2><span class="icon">📱</span>Android <span class="badge">APK</span></h2>
+                <p>Descarga la aplicación para Android. Detecta doble palmada y abre tus aplicaciones favoritas automáticamente.</p>
+                
+                <ul class="features">
+                    <li>Detección de doble palmada en tiempo real</li>
+                    <li>Configuración personalizable de sensibilidad</li>
+                    <li>Interfaz intuitiva y fácil de usar</li>
+                    <li>Bajo consumo de batería</li>
+                    <li>Sin conexión a internet requerida</li>
+                </ul>
+
+                <div class="requirements">
+                    <h3>Requisitos:</h3>
+                    <ul>
+                        <li>Android 7.0 o superior</li>
+                        <li>Micrófono funcional</li>
+                        <li>Permiso de micrófono</li>
+                    </ul>
+                </div>
+
+                <div class="download-section">
+                    <a href="bin/claptrigger-0.1-debug.apk" class="download-btn">
+                        ⬇️ Descargar APK
+                    </a>
+                    <a href="DOCKER_BUILD.md" class="download-btn secondary">
+                        🐳 Compilar con Docker
+                    </a>
+                    <a href="build-apk.bat" class="download-btn secondary" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        ▶️ Script Compilación (Windows)
+                    </a>
+                </div>
+            </div>
+
+            <!-- PC Card -->
+            <div class="card">
+                <h2><span class="icon">💻</span>Ordenador <span class="badge">Python</span></h2>
+                <p>Descarga el código Python para ejecutar en tu computadora. Compatible con Windows, Linux y macOS.</p>
+                
+                <ul class="features">
+                    <li>Detección de palmadas de doble golpe</li>
+                    <li>Configuración avanzada de aplicaciones</li>
+                    <li>Interfaz gráfica intuitiva (GUI)</li>
+                    <li>Arranque automático opcional</li>
+                    <li>Soporte para múltiples aplicaciones</li>
+                </ul>
+
+                <div class="requirements">
+                    <h3>Requisitos:</h3>
+                    <ul>
+                        <li>Python 3.7+</li>
+                        <li>pip (gestor de paquetes)</li>
+                        <li>Micrófono funcional</li>
+                    </ul>
+                </div>
+
+                <div class="download-section">
+                    <a href="/api/download-python" class="download-btn">
+                        ⬇️ Descargar Código Python
+                    </a>
+                    <a href="/api/download-docs" class="download-btn secondary">
+                        📖 Descargar Documentación
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Installation and Usage -->
+        <div class="info-section">
+            <h2>🚀 Instalación y Configuración</h2>
+            
+            <div class="instructions">
+                <h3>Para Windows (Ordenador):</h3>
+                <ol>
+                    <li>Descarga los archivos del código Python</li>
+                    <li>Instala las dependencias:
+                        <div class="code-block">pip install numpy sounddevice</div>
+                    </li>
+                    <li>Ejecuta con configuración:
+                        <div class="code-block">python clap-trigger.py --configure</div>
+                    </li>
+                    <li>Selecciona las aplicaciones que deseas abrir con palmadas</li>
+                    <li>Presiona "Iniciar" y comienza a usar</li>
+                </ol>
+
+                <h3>Para Android:</h3>
+                <ol>
+                    <li><strong>Compilar la APK:</strong>
+                        <ul style="margin-left: 20px; margin-top: 10px;">
+                            <li>Instala <a href="https://www.docker.com/" target="_blank">Docker Desktop</a></li>
+                            <li>Haz clic en el botón "🐳 Compilar con Docker"</li>
+                            <li>Lee el archivo DOCKER_BUILD.md para instrucciones detalladas</li>
+                            <li>En Windows, ejecuta <code>build-apk.bat</code></li>
+                            <li>En Linux/Mac, ejecuta <code>./build-apk.sh</code></li>
+                            <li>El APK se generará en la carpeta <code>bin/</code> (demora ~15-20 minutos)</li>
+                        </ul>
+                    </li>
+                    <li>Transfiere el APK a tu teléfono Android</li>
+                    <li>Abre el archivo y instala la aplicación</li>
+                    <li>Otorga permisos de micrófono</li>
+                    <li>Abre la aplicación y configura las apps deseadas</li>
+                    <li>Presiona "Iniciar Clap Trigger" para comenzar</li>
+                </ol>
+
+                <h3>🐳 Compilar con Docker (RECOMENDADO - Más Fácil):</h3>
+                <ol>
+                    <li>Instala <a href="https://www.docker.com/" target="_blank">Docker Desktop</a></li>
+                    <li>En Windows, ejecuta:
+                        <div class="code-block">build-apk.bat</div>
+                    </li>
+                    <li>En Linux/Mac, ejecuta:
+                        <div class="code-block">chmod +x build-apk.sh && ./build-apk.sh</div>
+                    </li>
+                    <li>Espera 15-20 minutos (depende de tu conexión y PC)</li>
+                    <li>El APK se generará en: <code>bin/claptrigger-0.1-debug.apk</code></li>
+                </ol>
+
+                <h3>Compilar Manualmente (Usuarios Avanzados):</h3>
+                <ol>
+                    <li>Instala Buildozer en Linux:
+                        <div class="code-block">pip install buildozer Cython</div>
+                    </li>
+                    <li>Instala dependencias del sistema:
+                        <div class="code-block">sudo apt install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev</div>
+                    </li>
+                    <li>Ejecuta buildozer:
+                        <div class="code-block">buildozer android debug</div>
+                    </li>
+                    <li>El APK se generará en: <code>bin/</code></li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Features -->
+        <div class="info-section">
+            <h2>✨ Características Principales</h2>
+            <ul class="features" style="font-size: 1.1em;">
+                <li>Detección inteligente de doble palmada</li>
+                <li>Configuración de sensibilidad personalizable</li>
+                <li>Interfaz amigable con usuario</li>
+                <li>Soporte para múltiples aplicaciones</li>
+                <li>Bajo consumo de recursos</li>
+                <li>Totalmente configurable</li>
+                <li>Sin dependencias externas innecesarias</li>
+                <li>Código abierto y modificable</li>
+            </ul>
+        </div>
+
+        <!-- Troubleshooting -->
+        <div class="info-section">
+            <h2>❓ Preguntas Frecuentes</h2>
+            <div class="instructions">
+                <h3>¿Qué hago si no detecta palmadas?</h3>
+                <p>Intenta ajustar el umbral de sensibilidad. Un valor más bajo hace la detección más sensible. Prueba valores entre 20 y 40.</p>
+
+                <h3>¿Necesito conexión a internet?</h3>
+                <p>No, la aplicación funciona completamente offline. Solo necesita acceso al micrófono de tu dispositivo.</p>
+
+                <h3>¿Qué permisos necesita?</h3>
+                <p>Solo necesita permiso de acceso al micrófono para detectar palmadas.</p>
+
+                <h3>¿Puedo personalizar qué aplicaciones se abren?</h3>
+                <p>Sí, puedes agregar, eliminar o cambiar cualquier aplicación desde la interfaz de configuración.</p>
+
+                <h3>¿Es compatible con mi dispositivo?</h3>
+                <p><strong>Android:</strong> Android 7.0 o superior<br>
+                <strong>Ordenador:</strong> Windows 7+, Linux, o macOS con Python 3.7+</p>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; 2024 Clap Trigger - Todos los derechos reservados</p>
+            <p style="font-size: 0.9em; margin-top: 10px;">Proyecto de código abierto | <a href="#" style="color: white;">Repositorio</a></p>
+        </footer>
+    </div>
+
+    <script>
+        function downloadPython() {
+            // Descargar código Python
+            window.location.href = '/api/download-python';
+        }
+
+        function downloadDocs() {
+            // Descargar documentación
+            window.location.href = '/api/download-docs';
+        }
+
+        // Animación suave al cargar
+        window.addEventListener('load', function() {
+            document.querySelectorAll('.card').forEach((card, index) => {
+                card.style.animation = `fadeIn 0.6s ease ${index * 0.2}s both`;
+            });
+        });
+
+        // Agregar animación CSS
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+version: '3.8'
+services:
+  builder:
+    image: clap-trigger-builder:latest
+    volumes:
+      - .:/app
+    working_dir: /app
+    user: builduser
+    command: buildozer android debug
