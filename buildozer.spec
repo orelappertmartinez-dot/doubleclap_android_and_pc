@@ -85,7 +85,7 @@ fullscreen = 0
 #android.presplash_color = #FFFFFF
 
 # (list) Permissions
-android.permissions = INTERNET,RECORD_AUDIO,WAKE_LOCK
+android.permissions = INTERNET,RECORD_AUDIO,WAKE_LOCK,QUERY_ALL_PACKAGES
 
 # (int) Target Android API, should be as high as possible.
 android.api = 33
