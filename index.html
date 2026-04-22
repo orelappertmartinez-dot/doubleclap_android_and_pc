@@ -3,459 +3,460 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clap Trigger - Controla aplicaciones con palmadas</title>
+    <title>Clap Trigger - Descargas</title>
     <style>
+        :root {
+            --bg: #07101d;
+            --panel: rgba(11, 22, 39, 0.82);
+            --panel-border: rgba(66, 117, 183, 0.24);
+            --text: #eef4ff;
+            --text-soft: #9eb0cc;
+            --accent: #3aa8ff;
+            --accent-deep: #155dff;
+            --accent-soft: #67c7ff;
+            --shadow: 0 28px 80px rgba(0, 0, 0, 0.42);
+        }
+
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 20px;
+            overflow-x: hidden;
+            font-family: "Bahnschrift", "Aptos", "Segoe UI Variable", sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(circle at top, rgba(38, 126, 255, 0.22), transparent 28%),
+                radial-gradient(circle at 80% 20%, rgba(58, 168, 255, 0.16), transparent 18%),
+                linear-gradient(180deg, #09101a 0%, #050b15 100%);
         }
 
-        .container {
-            max-width: 1200px;
+        body::before,
+        body::after {
+            content: "";
+            position: fixed;
+            width: 34rem;
+            height: 34rem;
+            border-radius: 50%;
+            filter: blur(72px);
+            opacity: 0.22;
+            pointer-events: none;
+            z-index: 0;
+            animation: drift 12s ease-in-out infinite;
+        }
+
+        body::before {
+            top: -10rem;
+            left: -8rem;
+            background: #114cff;
+        }
+
+        body::after {
+            right: -10rem;
+            bottom: -14rem;
+            background: #12a9ff;
+            animation-delay: -6s;
+        }
+
+        .shell {
+            position: relative;
+            z-index: 1;
+            max-width: 1120px;
             margin: 0 auto;
+            padding: 40px 24px 56px;
         }
 
-        header {
-            text-align: center;
-            color: white;
-            margin-bottom: 50px;
-            padding: 40px 20px;
-        }
-
-        header h1 {
-            font-size: 3em;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        header p {
-            font-size: 1.2em;
-            opacity: 0.9;
-        }
-
-        .content {
+        .hero {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-bottom: 50px;
+            gap: 24px;
+            justify-items: center;
+            text-align: center;
+            padding: 48px 20px 24px;
+        }
+
+        .mark-wrap {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            display: grid;
+            place-items: center;
+        }
+
+        .ring,
+        .ring::before,
+        .ring::after {
+            position: absolute;
+            border: 1px solid rgba(58, 168, 255, 0.2);
+            border-radius: 50%;
+            inset: 0;
+            content: "";
+            animation: ripple 4.8s linear infinite;
+        }
+
+        .ring::before {
+            inset: 14px;
+            animation-delay: -1.6s;
+        }
+
+        .ring::after {
+            inset: 28px;
+            animation-delay: -3.2s;
+        }
+
+        .mark {
+            position: relative;
+            width: 104px;
+            height: 104px;
+            border-radius: 28px;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(180deg, rgba(15, 28, 46, 0.96), rgba(9, 16, 28, 0.96));
+            border: 1px solid rgba(97, 174, 255, 0.28);
+            box-shadow:
+                0 0 0 1px rgba(65, 132, 230, 0.16),
+                0 0 28px rgba(49, 149, 255, 0.22),
+                inset 0 0 22px rgba(58, 168, 255, 0.1);
+            animation: pulse 2.6s ease-in-out infinite;
+        }
+
+        .mark svg {
+            width: 60px;
+            height: 60px;
+            stroke: url(#handStroke);
+            filter: drop-shadow(0 0 10px rgba(58, 168, 255, 0.52));
+        }
+
+        h1 {
+            font-size: clamp(2.6rem, 4vw, 4.4rem);
+            line-height: 0.96;
+            letter-spacing: -0.04em;
+            font-weight: 800;
+        }
+
+        h1 span {
+            color: var(--accent);
+        }
+
+        .subtitle {
+            max-width: 720px;
+            color: var(--text-soft);
+            font-size: clamp(1rem, 1.6vw, 1.18rem);
+            line-height: 1.6;
+        }
+
+        .downloads {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 22px;
+            margin-top: 26px;
         }
 
         .card {
-            background: white;
-            border-radius: 15px;
-            padding: 40px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            padding: 28px;
+            border-radius: 28px;
+            background: linear-gradient(180deg, rgba(15, 25, 42, 0.92), rgba(8, 15, 26, 0.96));
+            border: 1px solid var(--panel-border);
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(18px);
         }
 
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        .card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at top right, rgba(58, 168, 255, 0.14), transparent 24%),
+                linear-gradient(180deg, transparent, rgba(58, 168, 255, 0.04));
+            pointer-events: none;
         }
 
-        .card h2 {
-            color: #667eea;
-            margin-bottom: 20px;
-            font-size: 1.8em;
+        .card-top {
             display: flex;
             align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
             gap: 10px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--accent-soft);
         }
 
-        .icon {
-            font-size: 2em;
-        }
-
-        .card p {
-            color: #666;
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
-
-        .features {
-            list-style: none;
-            margin: 20px 0;
-        }
-
-        .features li {
-            color: #666;
-            padding: 8px 0;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .features li:before {
-            content: "✓ ";
-            color: #667eea;
-            font-weight: bold;
-            margin-right: 10px;
-        }
-
-        .download-section {
-            margin-top: 30px;
-        }
-
-        .download-btn {
-            display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 15px 30px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-size: 1.1em;
-            font-weight: bold;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border: none;
-            cursor: pointer;
-            margin-right: 10px;
-            margin-bottom: 10px;
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .download-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
-        }
-
-        .download-btn.secondary {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            box-shadow: 0 5px 15px rgba(245, 87, 108, 0.4);
-        }
-
-        .download-btn.secondary:hover {
-            box-shadow: 0 8px 25px rgba(245, 87, 108, 0.6);
-        }
-
-        .info-section {
-            background: white;
-            border-radius: 15px;
-            padding: 40px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-
-        .info-section h2 {
-            color: #667eea;
-            margin-bottom: 20px;
-            font-size: 1.5em;
-        }
-
-        .instructions {
-            margin-top: 20px;
-        }
-
-        .instructions h3 {
-            color: #764ba2;
-            margin: 15px 0 10px 0;
-            font-size: 1.1em;
-        }
-
-        .instructions ol, .instructions ul {
-            margin-left: 20px;
-            line-height: 1.8;
-            color: #666;
-        }
-
-        .instructions li {
-            margin-bottom: 8px;
-        }
-
-        .code-block {
-            background: #f5f5f5;
-            padding: 15px;
-            border-left: 4px solid #667eea;
-            margin: 10px 0;
-            border-radius: 5px;
-            font-family: 'Courier New', monospace;
-            overflow-x: auto;
-        }
-
-        footer {
-            text-align: center;
-            color: white;
-            padding: 30px;
-            opacity: 0.8;
-        }
-
-        .requirements {
-            background: #f0f7ff;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-            border-left: 4px solid #667eea;
-        }
-
-        .requirements h3 {
-            color: #667eea;
-            margin-bottom: 10px;
-        }
-
-        .requirements ul {
-            margin-left: 20px;
-            color: #555;
-        }
-
-        .requirements li {
-            margin-bottom: 5px;
-        }
-
-        @media (max-width: 768px) {
-            .content {
-                grid-template-columns: 1fr;
-            }
-
-            header h1 {
-                font-size: 2em;
-            }
-
-            .card {
-                padding: 25px;
-            }
-
-            .download-btn {
-                display: block;
-                width: 100%;
-                text-align: center;
-                margin-bottom: 10px;
-            }
+        .platform {
+            font-size: 1.9rem;
+            font-weight: 800;
+            margin-top: 10px;
         }
 
         .badge {
-            display: inline-block;
-            background: #667eea;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 0.85em;
-            margin-left: 10px;
+            border-radius: 999px;
+            padding: 10px 14px;
+            background: rgba(58, 168, 255, 0.12);
+            border: 1px solid rgba(58, 168, 255, 0.18);
+            color: var(--accent-soft);
+            font-size: 0.86rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .description {
+            color: var(--text-soft);
+            line-height: 1.65;
+            margin-bottom: 18px;
+        }
+
+        .meta {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 22px;
+        }
+
+        .meta-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(132, 162, 214, 0.12);
+            color: var(--text-soft);
+            font-size: 0.95rem;
+        }
+
+        .meta-row strong {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .download-btn {
+            display: inline-flex;
+            width: 100%;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            border-radius: 18px;
+            padding: 18px 22px;
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 800;
+            letter-spacing: 0.01em;
+            background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+            box-shadow:
+                0 0 0 1px rgba(118, 194, 255, 0.18),
+                0 14px 32px rgba(28, 111, 255, 0.32),
+                inset 0 1px 0 rgba(255, 255, 255, 0.18);
+            transition: transform 0.22s ease, box-shadow 0.22s ease, filter 0.22s ease;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow:
+                0 0 0 1px rgba(118, 194, 255, 0.24),
+                0 18px 36px rgba(28, 111, 255, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.22);
+            filter: brightness(1.04);
+        }
+
+        .note {
+            margin-top: 28px;
+            padding: 18px 20px;
+            border-radius: 18px;
+            background: rgba(11, 20, 35, 0.72);
+            border: 1px solid rgba(113, 147, 196, 0.14);
+            color: var(--text-soft);
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        footer {
+            margin-top: 20px;
+            text-align: center;
+            color: rgba(182, 198, 223, 0.72);
+            font-size: 0.94rem;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(0.98);
+                box-shadow:
+                    0 0 0 1px rgba(65, 132, 230, 0.16),
+                    0 0 22px rgba(49, 149, 255, 0.16),
+                    inset 0 0 18px rgba(58, 168, 255, 0.08);
+                opacity: 0.88;
+            }
+            50% {
+                transform: scale(1.03);
+                box-shadow:
+                    0 0 0 1px rgba(65, 132, 230, 0.28),
+                    0 0 34px rgba(49, 149, 255, 0.32),
+                    inset 0 0 28px rgba(58, 168, 255, 0.18);
+                opacity: 1;
+            }
+        }
+
+        @keyframes ripple {
+            0% {
+                transform: scale(0.86);
+                opacity: 0.1;
+            }
+            50% {
+                opacity: 0.28;
+            }
+            100% {
+                transform: scale(1.1);
+                opacity: 0.02;
+            }
+        }
+
+        @keyframes drift {
+            0%, 100% {
+                transform: translate3d(0, 0, 0) scale(1);
+            }
+            50% {
+                transform: translate3d(16px, -18px, 0) scale(1.06);
+            }
+        }
+
+        @media (max-width: 860px) {
+            .downloads {
+                grid-template-columns: 1fr;
+            }
+
+            .shell {
+                padding-inline: 18px;
+            }
+
+            .card {
+                padding: 24px;
+            }
+
+            .card-top,
+            .meta-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>👏 Clap Trigger</h1>
-            <p>Controla tus aplicaciones con palmadas</p>
-        </header>
-
-        <div class="content">
-            <!-- Android Card -->
-            <div class="card">
-                <h2><span class="icon">📱</span>Android <span class="badge">APK</span></h2>
-                <p>Descarga la aplicación para Android. Detecta doble palmada y abre tus aplicaciones favoritas automáticamente.</p>
-                
-                <ul class="features">
-                    <li>Detección de doble palmada en tiempo real</li>
-                    <li>Configuración personalizable de sensibilidad</li>
-                    <li>Interfaz intuitiva y fácil de usar</li>
-                    <li>Bajo consumo de batería</li>
-                    <li>Sin conexión a internet requerida</li>
-                </ul>
-
-                <div class="requirements">
-                    <h3>Requisitos:</h3>
-                    <ul>
-                        <li>Android 7.0 o superior</li>
-                        <li>Micrófono funcional</li>
-                        <li>Permiso de micrófono</li>
-                    </ul>
-                </div>
-
-                <div class="download-section">
-                    <a href="bin/claptrigger-0.1-debug.apk" class="download-btn">
-                        ⬇️ Descargar APK
-                    </a>
-                    <a href="DOCKER_BUILD.md" class="download-btn secondary">
-                        🐳 Compilar con Docker
-                    </a>
-                    <a href="build-apk.bat" class="download-btn secondary" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                        ▶️ Script Compilación (Windows)
-                    </a>
+    <main class="shell">
+        <section class="hero">
+            <div class="mark-wrap" aria-hidden="true">
+                <div class="ring"></div>
+                <div class="mark">
+                    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="handStroke" x1="10" y1="8" x2="56" y2="54" gradientUnits="userSpaceOnUse">
+                                <stop stop-color="#6ED0FF" />
+                                <stop offset="1" stop-color="#2493FF" />
+                            </linearGradient>
+                        </defs>
+                        <path d="M14 41.5C12.8 35.2 15.4 29.4 20.6 26.8L30 16.9C31.9 14.9 34.8 14.8 36.8 16.6C38.8 18.5 38.9 21.4 37.1 23.4L29.1 31.9" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M24.5 29.8L34.5 19.5" stroke-width="4" stroke-linecap="round"/>
+                        <path d="M30.5 34L40.3 23.8" stroke-width="4" stroke-linecap="round"/>
+                        <path d="M36.7 38L45 29.6" stroke-width="4" stroke-linecap="round"/>
+                        <path d="M14 41.5C16.2 50 24.7 55.9 33.6 54.2C40.8 52.8 46.3 47.2 47.5 40C48.3 35 45.5 30.1 40.8 28.4" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M46.5 10V3.5" stroke-width="4" stroke-linecap="round"/>
+                        <path d="M55 15.5L60.5 10.5" stroke-width="4" stroke-linecap="round"/>
+                        <path d="M57 26H63" stroke-width="4" stroke-linecap="round"/>
+                    </svg>
                 </div>
             </div>
 
-            <!-- PC Card -->
-            <div class="card">
-                <h2><span class="icon">💻</span>Ordenador <span class="badge">Python</span></h2>
-                <p>Descarga el código Python para ejecutar en tu computadora. Compatible con Windows, Linux y macOS.</p>
-                
-                <ul class="features">
-                    <li>Detección de palmadas de doble golpe</li>
-                    <li>Configuración avanzada de aplicaciones</li>
-                    <li>Interfaz gráfica intuitiva (GUI)</li>
-                    <li>Arranque automático opcional</li>
-                    <li>Soporte para múltiples aplicaciones</li>
-                </ul>
+            <div>
+                <h1>Clap <span>Trigger</span></h1>
+                <p class="subtitle">
+                    Descarga directa de las dos versiones disponibles del proyecto: Android en formato APK y Windows en formato EXE.
+                </p>
+            </div>
+        </section>
 
-                <div class="requirements">
-                    <h3>Requisitos:</h3>
-                    <ul>
-                        <li>Python 3.7+</li>
-                        <li>pip (gestor de paquetes)</li>
-                        <li>Micrófono funcional</li>
-                    </ul>
+        <section class="downloads" aria-label="Descargas disponibles">
+            <article class="card">
+                <div class="card-top">
+                    <div>
+                        <div class="eyebrow">Android Release</div>
+                        <div class="platform">APK para Android</div>
+                    </div>
+                    <div class="badge">.apk</div>
                 </div>
 
-                <div class="download-section">
-                    <a href="/api/download-python" class="download-btn">
-                        ⬇️ Descargar Código Python
-                    </a>
-                    <a href="/api/download-docs" class="download-btn secondary">
-                        📖 Descargar Documentación
-                    </a>
+                <p class="description">
+                    Instalador Android listo para copiar al telefono e instalarlo manualmente.
+                </p>
+
+                <div class="meta">
+                    <div class="meta-row">
+                        <span>Archivo</span>
+                        <strong>claptrigger-0.1-arm64-v8a-debug.apk</strong>
+                    </div>
+                    <div class="meta-row">
+                        <span>Ubicacion</span>
+                        <strong>bin/</strong>
+                    </div>
+                    <div class="meta-row">
+                        <span>Compatible con</span>
+                        <strong>Android ARM64</strong>
+                    </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- Installation and Usage -->
-        <div class="info-section">
-            <h2>🚀 Instalación y Configuración</h2>
-            
-            <div class="instructions">
-                <h3>Para Windows (Ordenador):</h3>
-                <ol>
-                    <li>Descarga los archivos del código Python</li>
-                    <li>Instala las dependencias:
-                        <div class="code-block">pip install numpy sounddevice</div>
-                    </li>
-                    <li>Ejecuta con configuración:
-                        <div class="code-block">python clap-trigger.py --configure</div>
-                    </li>
-                    <li>Selecciona las aplicaciones que deseas abrir con palmadas</li>
-                    <li>Presiona "Iniciar" y comienza a usar</li>
-                </ol>
+                <a class="download-btn" href="./bin/claptrigger-0.1-arm64-v8a-debug.apk" download="claptrigger-0.1-arm64-v8a-debug.apk">
+                    Descargar APK
+                </a>
+            </article>
 
-                <h3>Para Android:</h3>
-                <ol>
-                    <li><strong>Compilar la APK:</strong>
-                        <ul style="margin-left: 20px; margin-top: 10px;">
-                            <li>Instala <a href="https://www.docker.com/" target="_blank">Docker Desktop</a></li>
-                            <li>Haz clic en el botón "🐳 Compilar con Docker"</li>
-                            <li>Lee el archivo DOCKER_BUILD.md para instrucciones detalladas</li>
-                            <li>En Windows, ejecuta <code>build-apk.bat</code></li>
-                            <li>En Linux/Mac, ejecuta <code>./build-apk.sh</code></li>
-                            <li>El APK se generará en la carpeta <code>bin/</code> (demora ~15-20 minutos)</li>
-                        </ul>
-                    </li>
-                    <li>Transfiere el APK a tu teléfono Android</li>
-                    <li>Abre el archivo y instala la aplicación</li>
-                    <li>Otorga permisos de micrófono</li>
-                    <li>Abre la aplicación y configura las apps deseadas</li>
-                    <li>Presiona "Iniciar Clap Trigger" para comenzar</li>
-                </ol>
+            <article class="card">
+                <div class="card-top">
+                    <div>
+                        <div class="eyebrow">Windows Release</div>
+                        <div class="platform">Ejecutable para Windows</div>
+                    </div>
+                    <div class="badge">.exe</div>
+                </div>
 
-                <h3>🐳 Compilar con Docker (RECOMENDADO - Más Fácil):</h3>
-                <ol>
-                    <li>Instala <a href="https://www.docker.com/" target="_blank">Docker Desktop</a></li>
-                    <li>En Windows, ejecuta:
-                        <div class="code-block">build-apk.bat</div>
-                    </li>
-                    <li>En Linux/Mac, ejecuta:
-                        <div class="code-block">chmod +x build-apk.sh && ./build-apk.sh</div>
-                    </li>
-                    <li>Espera 15-20 minutos (depende de tu conexión y PC)</li>
-                    <li>El APK se generará en: <code>bin/claptrigger-0.1-debug.apk</code></li>
-                </ol>
+                <p class="description">
+                    Ejecutable empaquetado del cliente de escritorio. No requiere instalar Python para abrirlo.
+                </p>
 
-                <h3>Compilar Manualmente (Usuarios Avanzados):</h3>
-                <ol>
-                    <li>Instala Buildozer en Linux:
-                        <div class="code-block">pip install buildozer Cython</div>
-                    </li>
-                    <li>Instala dependencias del sistema:
-                        <div class="code-block">sudo apt install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev</div>
-                    </li>
-                    <li>Ejecuta buildozer:
-                        <div class="code-block">buildozer android debug</div>
-                    </li>
-                    <li>El APK se generará en: <code>bin/</code></li>
-                </ol>
-            </div>
-        </div>
+                <div class="meta">
+                    <div class="meta-row">
+                        <span>Archivo</span>
+                        <strong>ClapTrigger.exe</strong>
+                    </div>
+                    <div class="meta-row">
+                        <span>Ubicacion</span>
+                        <strong>dist/</strong>
+                    </div>
+                    <div class="meta-row">
+                        <span>Compatible con</span>
+                        <strong>Windows</strong>
+                    </div>
+                </div>
 
-        <!-- Features -->
-        <div class="info-section">
-            <h2>✨ Características Principales</h2>
-            <ul class="features" style="font-size: 1.1em;">
-                <li>Detección inteligente de doble palmada</li>
-                <li>Configuración de sensibilidad personalizable</li>
-                <li>Interfaz amigable con usuario</li>
-                <li>Soporte para múltiples aplicaciones</li>
-                <li>Bajo consumo de recursos</li>
-                <li>Totalmente configurable</li>
-                <li>Sin dependencias externas innecesarias</li>
-                <li>Código abierto y modificable</li>
-            </ul>
-        </div>
+                <a class="download-btn" href="./dist/ClapTrigger.exe" download="ClapTrigger.exe">
+                    Descargar EXE
+                </a>
+            </article>
+        </section>
 
-        <!-- Troubleshooting -->
-        <div class="info-section">
-            <h2>❓ Preguntas Frecuentes</h2>
-            <div class="instructions">
-                <h3>¿Qué hago si no detecta palmadas?</h3>
-                <p>Intenta ajustar el umbral de sensibilidad. Un valor más bajo hace la detección más sensible. Prueba valores entre 20 y 40.</p>
-
-                <h3>¿Necesito conexión a internet?</h3>
-                <p>No, la aplicación funciona completamente offline. Solo necesita acceso al micrófono de tu dispositivo.</p>
-
-                <h3>¿Qué permisos necesita?</h3>
-                <p>Solo necesita permiso de acceso al micrófono para detectar palmadas.</p>
-
-                <h3>¿Puedo personalizar qué aplicaciones se abren?</h3>
-                <p>Sí, puedes agregar, eliminar o cambiar cualquier aplicación desde la interfaz de configuración.</p>
-
-                <h3>¿Es compatible con mi dispositivo?</h3>
-                <p><strong>Android:</strong> Android 7.0 o superior<br>
-                <strong>Ordenador:</strong> Windows 7+, Linux, o macOS con Python 3.7+</p>
-            </div>
+        <div class="note">
+            Esta pagina ya no depende de endpoints API ni de documentacion adicional. Los dos botones apuntan directamente a los archivos reales del proyecto.
         </div>
 
         <footer>
-            <p>&copy; 2024 Clap Trigger - Todos los derechos reservados</p>
-            <p style="font-size: 0.9em; margin-top: 10px;">Proyecto de código abierto | <a href="#" style="color: white;">Repositorio</a></p>
+            Clap Trigger - descargas directas
         </footer>
-    </div>
-
-    <script>
-        function downloadPython() {
-            // Descargar código Python
-            window.location.href = '/api/download-python';
-        }
-
-        function downloadDocs() {
-            // Descargar documentación
-            window.location.href = '/api/download-docs';
-        }
-
-        // Animación suave al cargar
-        window.addEventListener('load', function() {
-            document.querySelectorAll('.card').forEach((card, index) => {
-                card.style.animation = `fadeIn 0.6s ease ${index * 0.2}s both`;
-            });
-        });
-
-        // Agregar animación CSS
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes fadeIn {
-                from {
-                    opacity: 0;
-                    transform: translateY(20px);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
-        `;
-        document.head.appendChild(style);
-    </script>
+    </main>
 </body>
 </html>
